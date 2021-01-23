@@ -25,7 +25,7 @@ function playground_text(playground) {
 
     var playgrounds = Array.from(document.querySelectorAll(".playground"));
     if (playgrounds.length > 0) {
-        fetch_with_timeout("https://play.rust-lang.org/meta/crates", {
+        fetch_with_timeout("https://utils.tmp.signe2.com/evaluate/check_libs", {
             headers: {
                 'Content-Type': "application/json",
             },
@@ -124,7 +124,7 @@ function playground_text(playground) {
 
         result_block.innerText = "Running...";
 
-        fetch_with_timeout("https://play.rust-lang.org/evaluate.json", {
+        fetch_with_timeout("https://utils.tmp.signe2.com/evaluate", {
             headers: {
                 'Content-Type': "application/json",
             },
