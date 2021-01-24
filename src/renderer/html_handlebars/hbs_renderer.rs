@@ -801,7 +801,8 @@ fn add_playground_pre(
             let classes = &caps[2];
             let code = &caps[3];
 
-            if classes.contains("language-rust") {
+            let regex_code_class = Regex::new(r##"(.* )?language-[a-z0-9]+( .*)?"##).unwrap();
+            if regex_code_class.is_match(classes) {
                 if (!classes.contains("ignore")
                     && !classes.contains("noplayground")
                     && !classes.contains("noplaypen"))

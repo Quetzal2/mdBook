@@ -153,7 +153,7 @@ function playground_text(playground) {
         // blocks or highlightjs will capture events
         Array
             .from(document.querySelectorAll('code.editable'))
-            .forEach(function (block) { block.classList.remove('language-rust'); });
+            .forEach(function (block) { block.classList = block.classList.filter(function(a){return ! /language-[a-z0-9]+/.test(a)}); });
 
         Array
             .from(document.querySelectorAll('code:not(.editable)'))
@@ -166,7 +166,7 @@ function playground_text(playground) {
     // even if highlighting doesn't apply
     code_nodes.forEach(function (block) { block.classList.add('hljs'); });
 
-    Array.from(document.querySelectorAll("code.language-rust")).forEach(function (block) {
+    Array.from(document.querySelectorAll(/code\.language-[a-z0-9]+/)).forEach(function (block) {
 
         var lines = Array.from(block.querySelectorAll('.boring'));
         // If no lines were hidden, return
