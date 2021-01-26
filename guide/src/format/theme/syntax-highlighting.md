@@ -84,12 +84,12 @@ with a `#`.
 
 
 ```bash
-# fn main() {
+<#> fn main() {
     let x = 5;
     let y = 6;
 
     println!("{}", x + y);
-# }
+<#> }
 ```
 
 Will render as

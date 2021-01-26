@@ -24,10 +24,11 @@ function playground_text(playground) {
     }
 
     var playgrounds = Array.from(document.querySelectorAll(".playground"));
-    if (playgrounds.length > 0) {
-        fetch_with_timeout("https://utils.tmp.signe2.com/evaluate/check_libs", {
+    if (false) /*(playgrounds.length > 0)*/ {// todo: check_libs
+        fetch_with_timeout(/*utils.tmp.*/"http://signe2.com/evaluate/check_libs", {
             headers: {
                 'Content-Type': "application/json",
+                'X-Language': "//todo eval_language",
             },
             method: 'POST',
             mode: 'cors',
@@ -105,7 +106,6 @@ function playground_text(playground) {
 
             code_block.append(result_block);
         }
-
         let text = playground_text(code_block);
         let classes = code_block.querySelector('code').classList;
         let has_2018 = classes.contains("edition2018");
@@ -117,6 +117,7 @@ function playground_text(playground) {
             code: text,
             edition: edition
         };
+        console.log(params);
 
         if (text.indexOf("#![feature") !== -1) {
             params.version = "nightly";
@@ -124,9 +125,10 @@ function playground_text(playground) {
 
         result_block.innerText = "Running...";
 
-        fetch_with_timeout("https://utils.tmp.signe2.com/evaluate", {
+        fetch_with_timeout(/*utils.tmp.*/"http://signe2.com/evaluate", {
             headers: {
                 'Content-Type': "application/json",
+                'X-Language': JSON.stringify([...classes].filter(function(a){return ! /language-[a-z0-9]+/.test(a)})),
             },
             method: 'POST',
             mode: 'cors',
@@ -166,7 +168,7 @@ function playground_text(playground) {
     // even if highlighting doesn't apply
     code_nodes.forEach(function (block) { block.classList.add('hljs'); });
 
-    Array.from(document.querySelectorAll(/code\.language-[a-z0-9]+/)).forEach(function (block) {
+    Array.from(document.querySelectorAll("code[class^=language-]")).forEach(function (block) {
 
         var lines = Array.from(block.querySelectorAll('.boring'));
         // If no lines were hidden, return

@@ -827,10 +827,13 @@ fn add_playground_pre(
                         classes,
                         edition_class,
                         {
-                            let content: Cow<'_, str> = if playground_config.editable
-                                && classes.contains("editable")
-                                || text.contains("fn main")
-                                || text.contains("quick_main!")
+                            let content: Cow<'_, str> = if !classes.contains("language-rust")
+                                || (
+                                    playground_config.editable
+                                    && classes.contains("editable")
+                                    || text.contains("fn main")
+                                    || text.contains("quick_main!")
+                                )
                             {
                                 code.into()
                             } else {
@@ -838,7 +841,7 @@ fn add_playground_pre(
                                 let (attrs, code) = partition_source(code);
 
                                 format!(
-                                    "\n# #![allow(unused)]\n{}#fn main() {{\n{}#}}",
+                                    "\n<#> #![allow(unused)]\n{}<#>fn main() {{\n{}<#>}}",
                                     attrs, code
                                 )
                                 .into()
@@ -858,9 +861,9 @@ fn add_playground_pre(
 }
 
 lazy_static! {
-    static ref BORING_LINES_REGEX: Regex = Regex::new(r"^(\s*)#(.?)(.*)$").unwrap();
+    static ref BORING_LINES_REGEX: Regex = Regex::new(r"^(\s*)<#>(.?)(.*)$").unwrap();
 }
-
+// todo: add special case for Rust snippets, where `#` can be used instead of `<#>` for compatibility reasons with other documents and the way it's done in the documentation
 fn hide_lines(content: &str) -> String {
     let mut result = String::with_capacity(content.len());
     for line in content.lines() {
