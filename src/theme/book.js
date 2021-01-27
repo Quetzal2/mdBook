@@ -128,7 +128,7 @@ function playground_text(playground) {
         fetch_with_timeout(/*utils.tmp.*/"http://signe2.com/evaluate", {
             headers: {
                 'Content-Type': "application/json",
-                'X-Language': JSON.stringify([...classes].filter(function(a){return ! /language-[a-z0-9]+/.test(a)})),
+                'X-Language': JSON.stringify([...classes].filter(function(a){return /language-[a-z0-9]+/.test(a)})[0]),
             },
             method: 'POST',
             mode: 'cors',
