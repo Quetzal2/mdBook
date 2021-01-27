@@ -117,12 +117,11 @@ function playground_text(playground) {
             code: text,
             edition: edition
         };
-        console.log(params);
 
         if (text.indexOf("#![feature") !== -1) {
             params.version = "nightly";
         }
-
+        result_block.style.removeProperty("color");
         result_block.innerText = "Running...";
 
         fetch_with_timeout(/*utils.tmp.*/"http://signe2.com/evaluate", {
@@ -135,8 +134,8 @@ function playground_text(playground) {
             body: JSON.stringify(params)
         })
         .then(response => response.json())
-        .then(response => result_block.innerText = response.result)
-        .catch(error => result_block.innerText = "Playground Communication: " + error.message);
+        .then(response => {if (response.error == "") {result_block.innerText = response.result} else {result_block.innerText = response.result + "\n\n   — —— ————  An error has occurred  ———— —— —\n\n" + response.error;}})
+        .catch(error => {result_block.innerText = "Can't execute the code snippet due to a playground communication error:\n\n" + error.message; result_block.style.color = "#555555";});
     }
 
     // Syntax highlighting Configuration
@@ -155,8 +154,8 @@ function playground_text(playground) {
         // blocks or highlightjs will capture events
         Array
             .from(document.querySelectorAll('code.editable'))
-            .forEach(function (block) { block.classList = block.classList.filter(function(a){return ! /language-[a-z0-9]+/.test(a)}); });
-
+            //.forEach(function (block) { let classes = block.classList; block.classList = [...classes].filter(function(a){return ! /language-[a-z0-9]+/.test(a)}); });
+            //.forEach(function (block) { block.classList.remove('language-rust'); block.classList.remove('language-python'); });//todo detect language
         Array
             .from(document.querySelectorAll('code:not(.editable)'))
             .forEach(function (block) { hljs.highlightBlock(block); });
@@ -256,7 +255,7 @@ function playground_text(playground) {
         }
 
         let code_block = pre_block.querySelector("code");
-        if (window.ace && code_block.classList.contains("editable")) {
+        if (window.ace && code_block.classList.value.includes("editable")) {
             var undoChangesButton = document.createElement('button');
             undoChangesButton.className = 'fa fa-history reset-button';
             undoChangesButton.title = 'Undo changes';
