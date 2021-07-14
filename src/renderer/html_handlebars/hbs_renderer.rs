@@ -841,16 +841,16 @@ fn add_playground_pre(
                                 let (attrs, code) = partition_source(code);
 
                                 format!(
-                                    "\n<#> #![allow(unused)]\n{}<#>fn main() {{\n{}<#>}}",
+                                    "\n# #![allow(unused)]\n{}#fn main() {{\n{}#}}",
                                     attrs, code
                                 )
                                 .into()
                             };
-                            hide_lines(&content)
+                            hide_lines(&content, classes)
                         }
                     )
                 } else {
-                    format!("<code class=\"{}\">{}</code>", classes, hide_lines(code))
+                    format!("<code class=\"{}\">{}</code>", classes, hide_lines(code, classes))
                 }
             } else {
                 // not language-rust, so no-op
@@ -861,29 +861,49 @@ fn add_playground_pre(
 }
 
 lazy_static! {
-    static ref BORING_LINES_REGEX: Regex = Regex::new(r"^(\s*)<#>(.?)(.*)$").unwrap();
+    static ref BORING_LINES_REGEX: Regex = Regex::new(r"^(\s*)#(.?)(.*)$").unwrap();
 }
 // todo: add special case for Rust snippets, where `#` can be used instead of `<#>` for compatibility reasons with other documents and the way it's done in the documentation
-fn hide_lines(content: &str) -> String {
+fn hide_lines(content: &str, classes: &str) -> String {
     let mut result = String::with_capacity(content.len());
     for line in content.lines() {
         if let Some(caps) = BORING_LINES_REGEX.captures(line) {
-            if &caps[2] == "#" {
-                result += &caps[1];
-                result += &caps[2];
-                result += &caps[3];
-                result += "\n";
-                continue;
-            } else if &caps[2] != "!" && &caps[2] != "[" {
-                result += "<span class=\"boring\">";
-                result += &caps[1];
-                if &caps[2] != " " {
-                    result += &caps[2];
+            if classes.contains("python") {
+                if &caps[2] == "#" {
+                    result += "<span class=\"boring\">";
+                    result += &caps[1];
+                    result += &caps[3];
+                    result += "\n";
+                    result += "</span>";
+                    continue;
                 }
-                result += &caps[3];
-                result += "\n";
-                result += "</span>";
-                continue;
+                else if &caps[2] != "!" {
+                    result += &caps[1];
+                    result += "#";
+                    result += &caps[2];
+                    result += &caps[3];
+                    result += "\n";
+                    continue;
+                }
+            }
+            else { //if classes.contains("rust") {
+                if &caps[2] == "#" {
+                    result += &caps[1];
+                    result += &caps[2];
+                    result += &caps[3];
+                    result += "\n";
+                    continue;
+                } else if &caps[2] != "!" && &caps[2] != "[" {
+                    result += "<span class=\"boring\">";
+                    result += &caps[1];
+                    if &caps[2] != " " {
+                        result += &caps[2];
+                    }
+                    result += &caps[3];
+                    result += "\n";
+                    result += "</span>";
+                    continue;
+                }
             }
         }
         result += line;
